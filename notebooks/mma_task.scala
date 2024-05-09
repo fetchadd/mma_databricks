@@ -1,4 +1,4 @@
-# Databricks notebook source
+// Databricks notebook source
 object MMATask {
   import upickle.default._
   def run(jsonArgs: String): Unit = {
