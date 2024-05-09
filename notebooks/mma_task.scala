@@ -29,7 +29,7 @@ object MMATask {
       .option("table", odpsTable)
       .mode("append").save
 
-    println("ok")
+    dbutils.notebook.exit("Exiting ok")
   }
 
   private def genSelectSql(srcCatalog: String, srcSchema: String, srcTable: String, whereCondition: String): String = {
