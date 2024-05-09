@@ -28,6 +28,8 @@ object MMATask {
       .option("schema", odpsSchema)
       .option("table", odpsTable)
       .mode("append").save
+
+    println("ok")
   }
 
   private def genSelectSql(srcCatalog: String, srcSchema: String, srcTable: String, whereCondition: String): String = {
