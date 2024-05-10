@@ -46,7 +46,7 @@ object MMATask {
           s += s"${partitions(i)}=${c(i)}"
 
           if (i < ptNum - 1) {
-            s += ","
+            s += "/"
           }
         }
 
