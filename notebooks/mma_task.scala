@@ -17,19 +17,57 @@ object MMATask {
     val sql = genSelectSql(catalog, schema, table, whereCondition)
     var sqlDf = spark.sql(sql)
 
-    // write data to odps
-    if (partitions.nonEmpty) {
-      sqlDf = sqlDf.sortWithinPartitions(partitions.head, partitions.slice(1, partitions.length): _*)
+    if (taskArgs.withData) {
+      // write data to odps
+      if (partitions.nonEmpty) {
+        sqlDf = sqlDf.sortWithinPartitions(partitions.head, partitions.slice(1, partitions.length): _*)
+      }
+
+      sqlDf.write
+        .format("org.apache.spark.sql.execution.datasources.v2.odps")
+        .option("project", odpsProject)
+        .option("schema", odpsSchema)
+        .option("table", odpsTable)
+        .mode("append").save
     }
 
-    sqlDf.write
-      .format("org.apache.spark.sql.execution.datasources.v2.odps")
-      .option("project", odpsProject)
-      .option("schema", odpsSchema)
-      .option("table", odpsTable)
-      .mode("append").save
+    if (taskArgs.withVerification) {
+      if (partitions.isEmpty) {
+        val count = sqlDf.count()
+        dbutils.notebook.exit(write(count))
+      }
 
-    dbutils.notebook.exit("Exiting ok")
+      val ptNum = partitions.length
+
+      def ptFormat(c: Seq[Any]): (String, Long) = {
+        var s = ""
+
+        for (i <- 0 until ptNum) {
+          s += s"${partitions(i)}=${c(i)}"
+
+          if (i < ptNum - 1) {
+            s += ","
+          }
+        }
+
+        println(c.last.getClass.getName)
+
+        val count = c.last.asInstanceOf[java.lang.Long]
+
+        (s, count)
+      }
+
+      val countByPt = sqlDf
+        .groupBy(partitions.head, partitions.slice(1, partitions.length): _*)
+        .count
+        .collect()
+        .map(e => e.toSeq)
+        .map(ptFormat)
+
+      dbutils.notebook.exit(write(countByPt))
+    }
+
+    dbutils.notebook.exit("ok")
   }
 
   private def genSelectSql(srcCatalog: String, srcSchema: String, srcTable: String, whereCondition: String): String = {
@@ -44,7 +82,7 @@ object MMATask {
     value != null && value.nonEmpty
   }
 
-  case class MMATaskArgs(dbArgs: DbArgs, odpsConfig: OdpsConfig, odpsArgs: OdpsArgs)
+  case class MMATaskArgs(dbArgs: DbArgs, odpsConfig: OdpsConfig, odpsArgs: OdpsArgs, withData: Boolean = true, withVerification: Boolean = true)
 
   object MMATaskArgs {
     implicit val rw: ReadWriter[MMATaskArgs] = macroRW
