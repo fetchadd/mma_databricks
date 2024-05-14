@@ -14,7 +14,7 @@ object MMATask {
     var OdpsArgs(odpsProject, odpsSchema, odpsTable) = taskArgs.odpsArgs
 
     if (partitions == null) {
-      partitions = Array();
+      partitions = List();
     }
 
     // read data from databricks table
