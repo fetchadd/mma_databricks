@@ -13,7 +13,7 @@ object MMATask {
     val DbArgs(catalog, schema, table, whereCondition, _partitions) = taskArgs.dbArgs
     var OdpsArgs(odpsProject, odpsSchema, odpsTable) = taskArgs.odpsArgs
 
-    val partitons = if (_partitions != null) {
+    val partitions = if (_partitions != null) {
       _partitions
     } else {
       List()
