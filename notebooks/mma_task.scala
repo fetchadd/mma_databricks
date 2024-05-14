@@ -6,8 +6,7 @@ object MMATask {
 
     spark.conf.set("odps.end.point", taskArgs.odpsConfig.odpsEndpoint)
     spark.conf.set("odps.project.name", taskArgs.odpsConfig.odpsQuotaProject)
-    spark.conf.set("odps.access.id", taskArgs.odpsConfig.odpsAccessId)
-    spark.conf.set("odps.access.key", taskArgs.odpsConfig.odpsAccessKey)
+    spark.conf.set("odps.access.security.token", taskArgs.odpsConfig.odpsBearToken)
     spark.conf.set("odps.tunnel.quota.name", taskArgs.odpsConfig.odpsTunnelQuota)
 
     val DbArgs(catalog, schema, table, whereCondition, partitions) = taskArgs.dbArgs
@@ -98,7 +97,7 @@ object MMATask {
     implicit val rw: ReadWriter[DbArgs] = macroRW
   }
 
-  case class OdpsConfig(odpsEndpoint: String, odpsQuotaProject: String, odpsTunnelQuota: String, odpsAccessId: String, odpsAccessKey: String)
+  case class OdpsConfig(odpsEndpoint: String, odpsQuotaProject: String, odpsTunnelQuota: String, odpsBearToken: String)
 
   object OdpsConfig {
     implicit val rw: ReadWriter[OdpsConfig] = macroRW
