@@ -13,6 +13,10 @@ object MMATask {
     val DbArgs(catalog, schema, table, whereCondition, partitions) = taskArgs.dbArgs
     var OdpsArgs(odpsProject, odpsSchema, odpsTable) = taskArgs.odpsArgs
 
+    if (partitions == null) {
+      partitions = Array();
+    }
+
     // read data from databricks table
     val sql = genSelectSql(catalog, schema, table, whereCondition)
     var sqlDf = spark.sql(sql)
