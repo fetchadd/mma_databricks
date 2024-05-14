@@ -10,11 +10,13 @@ object MMATask {
     spark.conf.set("odps.access.key", taskArgs.odpsConfig.odpsAccessKey)
     spark.conf.set("odps.tunnel.quota.name", taskArgs.odpsConfig.odpsTunnelQuota)
 
-    val DbArgs(catalog, schema, table, whereCondition, partitions) = taskArgs.dbArgs
+    val DbArgs(catalog, schema, table, whereCondition, _partitions) = taskArgs.dbArgs
     var OdpsArgs(odpsProject, odpsSchema, odpsTable) = taskArgs.odpsArgs
 
-    if (partitions == null) {
-      partitions = List();
+    val partitons = if (_partitions != null) {
+      _partitions
+    } else {
+      List()
     }
 
     // read data from databricks table
