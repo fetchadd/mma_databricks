@@ -78,9 +78,9 @@ object MMATask {
 
   private def genSelectSql(srcCatalog: String, srcSchema: String, srcTable: String, whereCondition: String): String = {
     if (stringNonEmpty(whereCondition)) {
-      s"select * from ${srcCatalog}.${srcSchema}.${srcTable} where ${whereCondition}"
+      s"select * from `${srcCatalog}`.`${srcSchema}`.`${srcTable}` where ${whereCondition}"
     } else {
-      s"select * from ${srcCatalog}.${srcSchema}.${srcTable}"
+      s"select * from `${srcCatalog}`.`${srcSchema}`.`${srcTable}`"
     }
   }
 
