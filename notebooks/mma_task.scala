@@ -8,7 +8,10 @@ object MMATask {
     spark.conf.set("odps.project.name", taskArgs.odpsConfig.odpsQuotaProject)
     spark.conf.set("odps.access.id", dbutils.secrets.get(scope = "mma", key = "odps.access.id"))
     spark.conf.set("odps.access.key", dbutils.secrets.get(scope = "mma", key = "odps.access.key"))
-    spark.conf.set("odps.tunnel.quota.name", taskArgs.odpsConfig.odpsTunnelQuota)
+
+    if (taskArgs.odpsConfig.odpsTunnelQuota != null) {
+      spark.conf.set("odps.tunnel.quota.name", taskArgs.odpsConfig.odpsTunnelQuota)
+    }
 
     val DbArgs(catalog, schema, table, whereCondition, _partitions) = taskArgs.dbArgs
     var OdpsArgs(odpsProject, odpsSchema, odpsTable) = taskArgs.odpsArgs
